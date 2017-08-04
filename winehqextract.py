@@ -100,6 +100,7 @@ parser.add_argument('-g','--gold', action="store_true", help='Extract games with
 parser.add_argument('-s','--silver', action="store_true", help='Extract games with a rating of Silver')
 parser.add_argument('-b','--bronze', action="store_true", help='Extract games with a rating of Bronze')
 parser.add_argument('-x','--garbage', action="store_true", help='Extract games with a rating of Garbage')
+parser.add_argument('-a','--all', action="store_true", help='Extract all games, to a single file')
 
 args = parser.parse_args()
 
@@ -115,20 +116,30 @@ if (args.bronze):
 	RatingsList.append("Bronze")
 if (args.garbage):
 	RatingsList.append("Garbage")
+if (args.all):
+	RatingsList.append("Platinum")
+	RatingsList.append("Gold")
+	RatingsList.append("Silver")
+	RatingsList.append("Bronze")
+	RatingsList.append("Garbage")
 
 if (not RatingsList):
-	print("You must specify at least one of [-p][-g][-s][-b][-x]")
+	print("You must specify at least one of [-p][-g][-s][-b][-x][-a]")
 	sys.exit(0)
 
-#print(RatingsList)
+
 Games = GetWineHqList(RatingsList)
-numratings = len(RatingsList)
-for rating in RatingsList:
-	if (numratings > 1):
-		print("# Games with rating", rating)
-	for game in Games[rating]:
+if (not args.all):
+	numratings = len(RatingsList)
+	for rating in RatingsList:
 		if (numratings > 1):
-			print("\t",game)
-		else:
-			print(game)
-	print("")
+			print("# Games with rating", rating)
+		for game in Games[rating]:
+			if (numratings > 1):
+				print("\t",game)
+			else:
+				print(game)
+else:
+	for rating in Games:
+		for game in Games[rating]:
+			print("\t",game,"\tIS\t",rating)
